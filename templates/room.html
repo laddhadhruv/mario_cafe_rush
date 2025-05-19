@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+		<div class="room_image">
+		{% if room.get_image %}
+		<img src="/static/images/{{room.get_image()}}"/>
+		{% endif %}
+		</div>
+		
+		{% if cutscene %}
+		<div class="cutscene">
+		<p>{{cutscene}}</p>
+		</div>
+		{% endif %}
+		
+		<div class="room_description">
+		<p>{{room.get_description()}}</p>
+		</div>
+		
+		<div class="room_inventory">
+		{% if room.inventory %}
+		<p>You see some stuff in this room:</p>
+		<form action="{{this_page}}" method="post">
+		{% for k, item in room.inventory.items() %}
+		<div><input type="checkbox" name="room_inventory" value="{{item.get_id()}}"/>{{item.get_description()}}</div>
+		{% endfor %}
+		<div><input type="submit" name="inventory" value="Take item(s)"/></div>
+		</form>
+		{% else %}
+		<p>You don't see anything interesting lying around.</p>
+		{% endif %}
+		</div>
+		
+		<div class="player_inventory">
+		<p>Your inventory:</p>
+		{% if player.inventory %}
+		<form action="{{this_page}}" method="post">
+		{% for k, item in player.inventory.items() %}
+		<div><input type="checkbox" name="player_inventory" value="{{item.get_id()}}"/>{{item.get_description()}}</div>
+		{% endfor %}
+		<div><input type="submit" name="inventory" value="Drop item(s)"/></div>
+		</form>
+		{% else %}
+		<p>You are not carrying anything.</p>
+		{% endif %}
+		</div>
+		
+		<div class="actions">
+		<p>Things you can do:</p>
+		{% for k, action in menu.actions.items() %}
+		<div class="action_form">
+		<form action="{{this_page}}" method="{{action.get_method()}}">
+		      <input type="hidden" name="action_name" value="{{action.get_id()}}" />
+		      <input type="submit" name="action" value="{{action.get_description()}}"/>
+		</form>
+		</div>
+		{% endfor %}
+		</div>
+{% endblock content %}

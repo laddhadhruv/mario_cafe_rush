@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>{{has_keys}}</p>
+
+<form action="{{this_page}}" method="post">
+		      <div>Choose shirt
+				<select name="shirt">
+				  <option value="Hawaiian">Hawaiian</option>
+				  <option value="Yellow">Yellow</option>
+				  <option value="Dress">Dress</option>
+				  <option value="Awesome">Awesome</option>
+				</select>
+              </div>
+		      <div><input type="submit" value="Enter"></div>
+</form>
+
+{% endblock content %}

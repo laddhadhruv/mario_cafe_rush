@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+		<div class="room_image">
+		{% if room.get_image %}
+		<img src="static/images/{{room.get_image}}"/>
+		{% endif %}
+		</div>
+		
+		{% if cutscene %}
+		<div class="cutscene">
+		<p>{{cutscene}}</p>
+		</div>
+		{% endif %}
+		
+		<div class="room_description">
+		<p>{{room.get_description}}</p>
+		</div>
+		
+
+{% endblock content %}

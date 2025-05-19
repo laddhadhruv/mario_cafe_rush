@@ -1,0 +1,19 @@
+body {
+	font-family: Palatino Linotype, Book Antiqua, Palatino, serif;
+	color: #7C3535;
+	background-color: #CCC;
+}
+
+.room_description {border-width:thin; border-bottom-style:solid; border-color:#0C0C0C; padding-bottom:50px; }
+
+.room_image {max-width:500px; width:100%; }
+
+.cutscene {color:red; font-style:italic}
+
+img {width:100%; height:auto; }
+
+.action_form { float:left; }
+
+.room_inventory, .player_inventory, .actions  { margin-right:1%; padding-left:1%; padding-right:1%; padding-bottom:20px; border-width:thin; border-right-style:solid; border-bottom-style:solid; border-color:#0C0C0C; width:29%; float:left; }
+
+.footer { padding-top:50px; clear:both; }
