@@ -2,11 +2,11 @@ from flask import Flask, redirect
 from flask_session import Session
 from core.support import registerHandler, registerForm, reset_game
 from rooms.startingpoint import StartingPoint
-from rooms.entrancehall import EntranceHall
-from rooms.basement import Basement
-from rooms.closet import Closet
+from rooms.frontofhouse import FrontOfHouse
+from rooms.bakery import Bakery
+from rooms.coffeebar import CoffeeBar
 from forms.shirtchoice import ShirtChoiceHandler
-from rooms.treasure_room import TreasureRoom
+from rooms.kitchen import Kitchen
 from rooms.victory_room import VictoryRoom
 
 #Initialize the Flask app and session:
@@ -34,25 +34,25 @@ def defaultstart():
 def startingpoint():
     return registerHandler(app, StartingPoint, 'startingpoint').update()
 
-@app.route('/entrancehall', methods=['GET','POST'])
-def entrancehall():
-    return registerHandler(app, EntranceHall, 'entrancehall').update()
+@app.route('/frontofhouse', methods=['GET','POST'])
+def frontofhouse():
+    return registerHandler(app, FrontOfHouse, 'frontofhouse').update()
 
-@app.route('/basement', methods=['GET','POST'])
-def basement():
-    return registerHandler(app, Basement, 'basement').update()
+@app.route('/bakery', methods=['GET','POST'])
+def bakery():
+    return registerHandler(app, Bakery, 'bakery').update()
 
-@app.route('/closet', methods=['GET', 'POST'])
-def closet():
-    return registerHandler(app, Closet, 'closet').update()
+@app.route('/coffeebar', methods=['GET', 'POST'])
+def coffeebar():
+    return registerHandler(app, CoffeeBar, 'coffeebar').update()
 
 @app.route('/shirtchoice', methods=['GET', 'POST'])
 def shirtchoice():
     return registerForm(app, 'shirtchoice', 'shirtchoice.html', ShirtChoiceHandler).update()
 
-@app.route('/treasure_room', methods=['GET', 'POST'])
-def treasure_room():
-    return registerHandler(app, TreasureRoom, 'treasure_room').update()
+@app.route('/kitchen', methods=['GET', 'POST'])
+def kitchen():
+    return registerHandler(app, Kitchen, 'kitchen').update()
 
 @app.route('/victory_room', methods=['GET', 'POST'])
 def victory_room():

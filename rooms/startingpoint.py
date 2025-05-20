@@ -13,11 +13,11 @@ class StartingPoint(Room):
     # return description of room.
     def get_description(self):
         return '''
-        You are standing outside a large mansion.  It appears to be abandoned and has an air of gloom and decay about it.
+        Today you are the barista, cook and baker on duty. Orders are piling up - can you survive the breakfast rush?
         '''
     # return image of room
     def get_image(self):
-        return 'starting_point.jpg'
+        return 'outside_cafe.png'
          
 # define actions for this room
 
@@ -27,11 +27,11 @@ class In(Action):
     
     # return description of action (used in label on webpage)
     def get_description(self):
-        return "Go Inside"
+        return "Get started"
     
     # return id of room to enter when action is complete
     def get_destination(self):
-        return 'entrancehall'
+        return 'frontofhouse'
     
     # return http method to use when user clicks on this action
     # use "get" if just moving to another room.  if changing something
