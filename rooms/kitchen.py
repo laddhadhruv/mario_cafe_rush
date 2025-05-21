@@ -1,14 +1,19 @@
 from core.basehandler import BaseHandler
 from core.room import Room
 from core.action import Action
-from items.treasure import Treasure
+# from items.treasure import Treasure # No longer used
+from items.orderable_items import Egg, Bacon # Import new items
 
 class Kitchen(Room):
     def __init__(self, room_id):
         Room.__init__(self, room_id)    # do basic initialization for every room
         
-        # add inventory items
-        self.add_item(Treasure())
+        # Add items available in the kitchen
+        self.add_item(Egg(style="scrambled")) # scrambled_egg
+        self.add_item(Egg(style="boiled"))    # boiled_egg
+        self.add_item(Egg(style="omelette"))  # omelette_egg
+        self.add_item(Bacon(cooking_style="soft"))    # soft_bacon
+        self.add_item(Bacon(cooking_style="crispy"))  # crispy_bacon
         
         # build list of actions
         # self.add_action(Exit)

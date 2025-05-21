@@ -2,12 +2,19 @@ from core.basehandler import BaseHandler
 from core.room import Room
 from core.support import set_cutscene, get_game
 from core.action import Action
+from items.orderable_items import Croissant, Bread # Import new items
 
 class Bakery(Room):
     def __init__(self, room_id):
         Room.__init__(self, room_id)    # do basic initialization for every room
         self.treasure_locked = True
         self.lock_rusty = True
+        
+        # Add items available in the bakery
+        self.add_item(Croissant(filled=False)) # plain_croissant
+        self.add_item(Croissant(filled=True))  # filled_croissant
+        self.add_item(Bread(toasted=False))    # untoasted_bread
+        self.add_item(Bread(toasted=True))     # toasted_bread
         
         # build list of actions
         self.add_action(ToFrontOfHouse)

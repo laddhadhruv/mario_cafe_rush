@@ -41,4 +41,4 @@ class UnlockDoor(Action):
                 set_cutscene("The door is already unlocked.")
         else:
             set_cutscene("There are no locked doors here.")
-        return
+        return 

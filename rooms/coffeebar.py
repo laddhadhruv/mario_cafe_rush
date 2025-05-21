@@ -1,6 +1,6 @@
 from core.basehandler import BaseHandler
 from core.room import Room
-from items.coffee import Coffee
+# from items.coffee import Coffee # No longer used
 from items.espresso import Espresso
 from core.action import Action
 
@@ -8,7 +8,7 @@ class CoffeeBar(Room):
     def __init__(self, room_id):
         super().__init__(room_id)
         # add inventory items
-        self.add_item(Coffee())  
+        # self.add_item(Coffee()) # No longer used
         self.add_item(Espresso())    
 
         # build list of actions

@@ -42,4 +42,4 @@ class ApplyOil(Action):
                 self.item.has_oil = False
         else:
             set_cutscene("You squeeze the oil can, but it is empty.")
-        return
+        return 

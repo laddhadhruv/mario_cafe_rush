@@ -29,4 +29,4 @@ class EmergeVictorious(Action):
     
     # return id of room to enter when action is complete
     def get_destination(self):
-        return 'victory_room'
+        return 'victory_room' 

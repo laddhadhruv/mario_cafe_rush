@@ -64,4 +64,4 @@ class TurnOff(Action):
     # turn lamp on and add cutscene
     def do_action(self,game,room,request):
         self.item.is_lit = False
-        set_cutscene("You press the switch on the lamp and it goes dark.")
+        set_cutscene("You press the switch on the lamp and it goes dark.") 

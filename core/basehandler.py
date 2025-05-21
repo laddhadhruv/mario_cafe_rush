@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect
 import core.support
 from core.menu import Menu
+from core.item import Item
 
 class BaseHandler():
     
@@ -83,14 +84,18 @@ class BaseHandler():
         if add_stuff:
             for item_name in add_stuff:
                 item = room.pop_item(item_name)
-                item.do_item_added(self.game,room,request)
-                player.add_item(item)
+                if isinstance(item, Item):
+                    item.do_item_added(self.game,room,request)
+                    player.add_item(item)
+                # else: item was not found, or pop_item returned default string - do nothing or log error
             self.game.update()
         
         # if user dropped something, then update player and room inventory
         if drop_stuff:
             for item_name in drop_stuff:
                 item = player.pop_item(item_name)
-                item.do_item_dropped(self.game,room,request)
-                room.add_item(item)
+                if isinstance(item, Item):
+                    item.do_item_dropped(self.game,room,request)
+                    room.add_item(item)
+                # else: item was not found, or pop_item returned default string - do nothing or log error
             self.game.update()
