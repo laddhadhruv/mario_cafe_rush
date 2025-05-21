@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Café Byte — Coffee Bar</title>
+</head>
+<body>
+  <h1>{{ room.get_description() }}</h1>
+
+  <h2>Inventory</h2>
+  <ul>
+    {% for item in room.items %}
+      <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Actions</h2>
+  <ul>
+    {# Inline coffee‐prep form or single button for OrderCoffee #}
+    {% for action in room.actions if action.id == 'OrderCoffee' %}
+      <li>
+        <form method="post">
+          <input type="hidden" name="action" value="OrderCoffee"/>
+          {% if not room.show_order_form %}
+            <button type="submit">{{ action.get_description() }}</button>
+          {% else %}
+            <label for="coffee_type">Iced or Hot?</label>
+            <select name="coffee_type" id="coffee_type">
+              <option value="hot">Hot</option>
+              <option value="iced">Iced</option>
+            </select><br/>
+            <label><input type="checkbox" name="add_milk"/> Add milk</label><br/>
+            <label><input type="checkbox" name="add_sugar"/> Add sugar</label><br/>
+            <label><input type="checkbox" name="add_espresso"/> Add espresso shot</label><br/>
+            <button type="submit">Brew!</button>
+          {% endif %}
+        </form>
+      </li>
+    {% endfor %}
+
+    {# All other navigation or ingredient actions #}
+    {% for action in room.actions if action.id != 'OrderCoffee' %}
+      <li>
+        {% if action.get_method() == 'get' %}
+          <a href="?action={{ action.id }}">{{ action.get_description() }}</a>
+        {% else %}
+          <form method="post">
+            <input type="hidden" name="action" value="{{ action.id }}"/>
+            <button type="submit">{{ action.get_description() }}</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

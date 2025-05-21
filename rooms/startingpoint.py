@@ -17,7 +17,7 @@ class StartingPoint(Room):
         '''
     # return image of room
     def get_image(self):
-        return 'outside_cafe.png'
+        return 'outside_cafe.jpg'
          
 # define actions for this room
 

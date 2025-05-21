@@ -99,3 +99,12 @@ class ToCoffeeBar(Action):
     # like the state of an inventory item or room then use "post"
     def get_method(self):
         return "get"
+    
+# order: a list, set or dictionary; potentially order; container to self.order in this room; find condition for how it's set -> next order button
+# random number generator w/ ID #s for items; keys are IDs and items are descriptions
+# multiples of items e.g. coffee2, espresso3, etc.
+# function to look up given ID with state
+# display order -> either room gets custom template or global template
+# deliver order = reset state of items to original location
+# best idea: container for order; set number of orders to win the game, completed orders counts toward 1
+# victory state = separate room

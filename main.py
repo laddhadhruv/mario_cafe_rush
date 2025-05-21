@@ -3,6 +3,7 @@ from flask_session import Session
 from core.support import registerHandler, registerForm, reset_game
 from rooms.startingpoint import StartingPoint
 from rooms.frontofhouse import FrontOfHouse
+from rooms.kitchen import Kitchen
 from rooms.bakery import Bakery
 from rooms.coffeebar import CoffeeBar
 from forms.shirtchoice import ShirtChoiceHandler
@@ -38,21 +39,21 @@ def startingpoint():
 def frontofhouse():
     return registerHandler(app, FrontOfHouse, 'frontofhouse').update()
 
+@app.route('/kitchen', methods=['GET','POST'])
+def kitchen():
+    return registerHandler(app, Kitchen, 'kitchen').update()
+
 @app.route('/bakery', methods=['GET','POST'])
 def bakery():
     return registerHandler(app, Bakery, 'bakery').update()
 
-@app.route('/coffeebar', methods=['GET', 'POST'])
+@app.route('/coffeebar', methods=['GET','POST'])
 def coffeebar():
     return registerHandler(app, CoffeeBar, 'coffeebar').update()
 
 @app.route('/shirtchoice', methods=['GET', 'POST'])
 def shirtchoice():
     return registerForm(app, 'shirtchoice', 'shirtchoice.html', ShirtChoiceHandler).update()
-
-@app.route('/kitchen', methods=['GET', 'POST'])
-def kitchen():
-    return registerHandler(app, Kitchen, 'kitchen').update()
 
 @app.route('/victory_room', methods=['GET', 'POST'])
 def victory_room():
