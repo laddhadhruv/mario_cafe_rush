@@ -4,34 +4,59 @@
 {# ─── SPLASH / START SCREEN ────────────────────────────────────────────────── #}
 {% if room.id == 'startingpoint' %}
   <style>
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+    }
     .start-screen {
-      height:100vh; margin:0;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      background:
-        url('{{ url_for("static", filename="images/coffee-mario-bg.jpg") }}')
-        center/cover no-repeat;
-      color:#fff; text-align:center;
-      font-family:'Press Start 2P',cursive;
-      position: relative;
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      font-family: 'Press Start 2P', cursive;
+      background: none;
+      overflow: hidden;
+    }
+    .start-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url('{{ url_for("static", filename="images/home_screen.jpeg") }}');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      opacity: 0.5;
+      z-index: -1;
     }
     .start-screen h1 {
-      font-size:3rem; text-shadow:2px 2px 4px rgba(0,0,0,0.7);
-      margin-bottom:1rem;
+      font-size: 3rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      margin-bottom: 1rem;
     }
     .start-screen p {
-      font-size:1.2rem; max-width:600px; line-height:1.4;
-      text-shadow:1px 1px 3px rgba(0,0,0,0.6);
+      font-size: 1.2rem;
+      max-width: 600px;
+      line-height: 1.4;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
     }
     .start-btn, .rules-btn {
-      margin:0.5rem; background:#6f4e37; color:#fff; border:none;
-      padding:1rem 2rem; font-size:1rem; cursor:pointer; border-radius:8px;
-      transition:transform .2s, box-shadow .2s;
-      font-family:'Press Start 2P',cursive;
+      margin: 0.5rem;
+      background: #6f4e37;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: transform .2s, box-shadow .2s;
+      font-family: 'Press Start 2P', cursive;
     }
     .start-btn:hover, .rules-btn:hover {
-      transform:translateY(-4px);
-      box-shadow:0 6px 20px rgba(0,0,0,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
     @keyframes jump {
       0%   { transform: translateY(0) scale(1); }
@@ -40,31 +65,54 @@
       100% { transform: translateY(0) scale(1); opacity:0; }
     }
     #barista-jump {
-      position:absolute; bottom:20%; left:50%;
-      width:100px; margin-left:-50px;
-      display:none; animation:jump 1s ease-out forwards;
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      width: 100px;
+      margin-left: -50px;
+      display: none;
+      animation: jump 1s ease-out forwards;
     }
     /* Modal */
     .modal-backdrop {
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.7); display:none;
-      align-items:center; justify-content:center; z-index:1000;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
     .modal {
-      background:#fff; border-radius:8px; padding:2rem;
-      max-width:600px; text-align:left; font-family:'Press Start 2P',cursive;
-      color:#4b2e2e; position:relative;
+      background: #fff;
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 600px;
+      text-align: left;
+      font-family: 'Press Start 2P', cursive;
+      color: #4b2e2e;
+      position: relative;
     }
     .modal h2 {
-      margin-top:0; color:#6f4e37; text-align:center;
+      margin-top: 0;
+      color: #6f4e37;
+      text-align: center;
     }
     .modal ul {
-      list-style:disc inside; margin:1rem 0; padding:0;
-      font-size:0.9rem; line-height:1.4;
+      list-style: disc inside;
+      margin: 1rem 0;
+      padding: 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
     .modal .close-btn {
-      position:absolute; top:0.5rem; right:0.5rem;
-      background:none; border:none; font-size:1.2rem; cursor:pointer;
+      position: absolute;
+      top: 0.5rem; right: 0.5rem;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
     }
   </style>
 
@@ -87,7 +135,6 @@
   </audio>
 
   <!-- Rules Modal -->
-    <!-- Rules Modal -->
   <div class="modal-backdrop" id="rules-modal">
     <div class="modal">
       <button class="close-btn" id="close-rules">&times;</button>
@@ -131,8 +178,7 @@
 {# ─── FRONT OF HOUSE ────────────────────────────────────────────────────────── #}
 {% elif room.id == 'frontofhouse' %}
   <style>
-    .foh { font-family:'Press Start 2P',cursive; color:#4b2e2e;
-           text-align:center; padding:2rem; }
+    .foh { font-family:'Press Start 2P',cursive; color:#4b2e2e; text-align:center; padding:2rem; }
     .cutscene-notice {
       background:#fff4e5; border:2px solid #d35400;
       color:#4b2e2e; font-family:monospace;
@@ -173,7 +219,9 @@
     {% endif %}
 
     <div class="board">BARISTA: {{ player.name }}</div>
-    <div class="board">ORDERS COMPLETED: {{ room.orders_completed }}/{{ config.orders_to_win }}</div>
+    <div class="board">
+      ORDERS COMPLETED: {{ room.orders_completed }}/{{ config.orders_to_win }}
+    </div>
     <div class="board">TIME LEFT: <span id="foh-timer">–</span> s</div>
 
     {% if room.current_order %}
@@ -389,8 +437,7 @@
               {% for k,item in room.inventory.items() %}
                 <li>
                   <label>
-                    <input type="checkbox" name="room_inventory"
-                           value="{{ item.get_id() }}"/>
+                    <input type="checkbox" name="room_inventory" value="{{ item.get_id() }}"/>
                     {{ item.get_description()|capitalize }}
                   </label>
                 </li>
@@ -410,16 +457,13 @@
               {% for k,item in player.inventory.items() %}
                 <li>
                   <label>
-                    <input type="checkbox" name="drop_id"
-                           value="{{ k }}"/>
+                    <input type="checkbox" name="drop_id" value="{{ k }}"/>
                     {{ item.get_description()|capitalize }}
                   </label>
                 </li>
               {% endfor %}
             </ul>
-            <button type="submit" name="action_name" value="DropItem">
-              Drop Selected
-            </button>
+            <button type="submit" name="action_name" value="DropItem">Drop Selected</button>
           </form>
         {% else %}
           <p>(empty)</p>
@@ -437,12 +481,8 @@
                  style="opacity:.5; cursor:default;"
                {% endif %}>
             {{ action.get_description() }}
-            <form id="act-{{action.get_id()}}"
-                  action="{{ this_page }}"
-                  method="{{ action.get_method() }}"
-                  style="display:none">
-              <input type="hidden" name="action_name"
-                     value="{{ action.get_id() }}"/>
+            <form id="act-{{action.get_id()}}" action="{{ this_page }}" method="{{ action.get_method() }}" style="display:none">
+              <input type="hidden" name="action_name" value="{{ action.get_id() }}"/>
             </form>
           </div>
         {% endif %}

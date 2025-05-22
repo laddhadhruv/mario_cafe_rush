@@ -20,8 +20,20 @@ from rooms.victory_room import VictoryRoom
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
-HOF_PATH    = os.path.join(BASE_DIR, 'hall_of_fame.csv')
+CONFIG_PATH = '/tmp/config.json'
+HOF_PATH    = '/tmp/hall_of_fame.csv'
+
+# Initial copy of config.json to /tmp if it doesn't exist
+# This ensures that the first time the app runs, it has a config to work with
+if not os.path.exists(CONFIG_PATH) and os.path.exists(os.path.join(BASE_DIR, 'config.json')):
+    import shutil
+    shutil.copyfile(os.path.join(BASE_DIR, 'config.json'), CONFIG_PATH)
+
+# Initial copy of hall_of_fame.csv to /tmp if it doesn't exist and the original exists
+# This is less critical than config but maintains similar behavior
+if not os.path.exists(HOF_PATH) and os.path.exists(os.path.join(BASE_DIR, 'hall_of_fame.csv')):
+    import shutil
+    shutil.copyfile(os.path.join(BASE_DIR, 'hall_of_fame.csv'), HOF_PATH)
 # ──────────────────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
@@ -71,14 +83,15 @@ def settings_post():
 
     app.config.update(cfg)
 
-    # Update player name in existing game session
-    from core.support import get_game
-    game = get_game()
-    if game:
-        player = game.get_player()
-        if player:
-            player.update_name()
-        game.update() # Persist game state changes
+    # If a new player name was provided in the form, update the active game session.
+    # The 'player_name' variable holds the stripped input from the form.
+    # 'cfg['player_name']' holds the name that was ultimately saved to config and app.config.
+    if player_name: # player_name is the non-empty string from form if a name was entered
+        from core.support import get_game # Local import for get_game
+        game_instance = get_game()
+        if game_instance and hasattr(game_instance, 'player') and game_instance.player:
+            game_instance.player.name = cfg['player_name'] # Update current player's name
+            game_instance.update() # Save updated game to session
 
     return redirect('/frontofhouse')
 # ──────────────────────────────────────────────────────────────────────────────
