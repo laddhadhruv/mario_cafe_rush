@@ -13,6 +13,7 @@
         center/cover no-repeat;
       color:#fff; text-align:center;
       font-family:'Press Start 2P',cursive;
+      position: relative;
     }
     .start-screen h1 {
       font-size:3rem; text-shadow:2px 2px 4px rgba(0,0,0,0.7);
@@ -22,13 +23,13 @@
       font-size:1.2rem; max-width:600px; line-height:1.4;
       text-shadow:1px 1px 3px rgba(0,0,0,0.6);
     }
-    .start-btn {
-      margin-top:2rem; background:#6f4e37; color:#fff; border:none;
+    .start-btn, .rules-btn {
+      margin:0.5rem; background:#6f4e37; color:#fff; border:none;
       padding:1rem 2rem; font-size:1rem; cursor:pointer; border-radius:8px;
       transition:transform .2s, box-shadow .2s;
       font-family:'Press Start 2P',cursive;
     }
-    .start-btn:hover {
+    .start-btn:hover, .rules-btn:hover {
       transform:translateY(-4px);
       box-shadow:0 6px 20px rgba(0,0,0,0.4);
     }
@@ -43,6 +44,28 @@
       width:100px; margin-left:-50px;
       display:none; animation:jump 1s ease-out forwards;
     }
+    /* Modal */
+    .modal-backdrop {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.7); display:none;
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal {
+      background:#fff; border-radius:8px; padding:2rem;
+      max-width:600px; text-align:left; font-family:'Press Start 2P',cursive;
+      color:#4b2e2e; position:relative;
+    }
+    .modal h2 {
+      margin-top:0; color:#6f4e37; text-align:center;
+    }
+    .modal ul {
+      list-style:disc inside; margin:1rem 0; padding:0;
+      font-size:0.9rem; line-height:1.4;
+    }
+    .modal .close-btn {
+      position:absolute; top:0.5rem; right:0.5rem;
+      background:none; border:none; font-size:1.2rem; cursor:pointer;
+    }
   </style>
 
   <div class="start-screen">
@@ -53,22 +76,57 @@
       src="{{ url_for('static', filename='images/barista1.png') }}"
       alt="Barista Jumping with Coffee"
     />
-    <button class="start-btn" id="play-btn">Click to Play</button>
+    <div>
+      <button class="start-btn" id="play-btn">Click to Play</button>
+      <button class="rules-btn" id="rules-btn">View Rules</button>
+    </div>
   </div>
 
   <audio id="jump-sound"
          src="{{ url_for('static', filename='audio/barista-jump-sound-effect_1.mp3') }}">
   </audio>
+
+  <!-- Rules Modal -->
+    <!-- Rules Modal -->
+  <div class="modal-backdrop" id="rules-modal">
+    <div class="modal">
+      <button class="close-btn" id="close-rules">&times;</button>
+      <h2>Game Rules</h2>
+      <ul>
+        <li>Serve <strong>{{ config.orders_to_win }}</strong> orders before time runs out.</li>
+        <li>Each order contains between 
+            <strong>{{ config.order_size.min }}</strong> and 
+            <strong>{{ config.order_size.max }}</strong> items.
+        </li>
+        <li>You have <strong>{{ config.time_limit }}</strong> seconds total; keep an eye on the clock!</li>
+      </ul>
+      <p style="margin-top:1rem; font-size:0.9rem;">
+        📋 <strong>Tip:</strong> You can tweak all of these—“Orders To Win”, “Order Size Min/Max” and “Time Limit”—on the 
+        <a href="{{ url_for('settings') }}">Configuration Page</a> before you play.  
+        Challenge yourself: how fast can you survive the breakfast rush?
+      </p>
+    </div>
+  </div>
+
   <script>
+    // Play + Jump animation
     document.getElementById('play-btn').addEventListener('click', () => {
       const sfx    = document.getElementById('jump-sound');
       const sprite = document.getElementById('barista-jump');
-      sfx.currentTime = 0;
-      sfx.play().catch(()=>{});
+      sfx.currentTime = 0; sfx.play().catch(()=>{});
       sprite.style.display = 'block';
       setTimeout(() => window.location.href = '/settings', 1000);
     });
+
+    // Rules modal logic
+    document.getElementById('rules-btn').addEventListener('click', () => {
+      document.getElementById('rules-modal').style.display = 'flex';
+    });
+    document.getElementById('close-rules').addEventListener('click', () => {
+      document.getElementById('rules-modal').style.display = 'none';
+    });
   </script>
+
 
 {# ─── FRONT OF HOUSE ────────────────────────────────────────────────────────── #}
 {% elif room.id == 'frontofhouse' %}
@@ -76,15 +134,10 @@
     .foh { font-family:'Press Start 2P',cursive; color:#4b2e2e;
            text-align:center; padding:2rem; }
     .cutscene-notice {
-      background:#fff4e5;
-      border:2px solid #d35400;
-      color:#4b2e2e;
-      font-family:monospace;
-      padding:0.8rem 1rem;
-      margin:1rem auto;
-      max-width:90%;
-      border-radius:6px;
-      text-align:left;
+      background:#fff4e5; border:2px solid #d35400;
+      color:#4b2e2e; font-family:monospace;
+      padding:0.8rem; margin:1rem auto; max-width:90%;
+      border-radius:6px; text-align:left;
     }
     .board {
       background:#111; color:#0f0;
@@ -115,18 +168,13 @@
   </style>
 
   <div class="foh">
-    {# ← show cutscene if any #}
     {% if cutscene %}
       <div class="cutscene-notice">{{ cutscene }}</div>
     {% endif %}
 
     <div class="board">BARISTA: {{ player.name }}</div>
-    <div class="board">
-      ORDERS COMPLETED: {{ room.orders_completed }}/{{ room.orders_to_win }}
-    </div>
-    <div class="board">
-      TIME LEFT: <span id="foh-timer">–</span> s
-    </div>
+    <div class="board">ORDERS COMPLETED: {{ room.orders_completed }}/{{ config.orders_to_win }}</div>
+    <div class="board">TIME LEFT: <span id="foh-timer">–</span> s</div>
 
     {% if room.current_order %}
       <div class="board current">
@@ -156,13 +204,10 @@
 
     <div class="actions-grid">
       <!-- New Order -->
-      <div class="action-card"
-           onclick="document.getElementById('new-order').submit()">
-        <img src="{{ url_for('static', filename='images/new_order1.png') }}"
-             alt="New Order"/>
+      <div class="action-card" onclick="document.getElementById('new-order').submit()">
+        <img src="{{ url_for('static', filename='images/new_order1.png') }}" alt="New Order"/>
         New Order
-        <form id="new-order" action="{{ this_page }}" method="post"
-              style="display:none;">
+        <form id="new-order" action="{{ this_page }}" method="post" style="display:none;">
           <input type="hidden" name="action_name" value="RequestNewOrder"/>
         </form>
       </div>
@@ -178,40 +223,31 @@
                document.getElementById('deliver-order').submit();
              }
            ">
-        <img src="{{ url_for('static', filename='images/deliver1.png') }}"
-             alt="Deliver"/>
+        <img src="{{ url_for('static', filename='images/deliver1.png') }}" alt="Deliver"/>
         Deliver
-        <form id="deliver-order" action="{{ this_page }}" method="post"
-              style="display:none;">
+        <form id="deliver-order" action="{{ this_page }}" method="post" style="display:none;">
           <input type="hidden" name="action_name" value="DeliverOrder"/>
         </form>
       </div>
 
       <!-- Bakery -->
-      <div class="action-card"
-           onclick="location.href='{{ url_for('bakery') }}'">
-        <img src="{{ url_for('static', filename='images/bakery1.png') }}"
-             alt="Bakery"/>
+      <div class="action-card" onclick="location.href='{{ url_for('bakery') }}'">
+        <img src="{{ url_for('static', filename='images/bakery1.png') }}" alt="Bakery"/>
         Bakery
       </div>
-
       <!-- Kitchen -->
-      <div class="action-card"
-           onclick="location.href='{{ url_for('kitchen') }}'">
-        <img src="{{ url_for('static', filename='images/kitchen1.png') }}"
-             alt="Kitchen"/>
+      <div class="action-card" onclick="location.href='{{ url_for('kitchen') }}'">
+        <img src="{{ url_for('static', filename='images/kitchen1.png') }}" alt="Kitchen"/>
         Kitchen
       </div>
-
       <!-- Coffee Bar -->
-      <div class="action-card"
-           onclick="location.href='{{ url_for('coffeebar') }}'">
-        <img src="{{ url_for('static', filename='images/coffee_bar1.png') }}"
-             alt="Coffee Bar"/>
+      <div class="action-card" onclick="location.href='{{ url_for('coffeebar') }}'">
+        <img src="{{ url_for('static', filename='images/coffee_bar1.png') }}" alt="Coffee Bar"/>
         Coffee Bar
       </div>
     </div>
   </div>
+
 
 {# ─── VICTORY ROOM ──────────────────────────────────────────────────────────── #}
 {% elif room.id == 'victory_room' %}
@@ -275,6 +311,7 @@
     </div>
   </div>
 
+
 {# ─── GENERIC ROOMS (Bakery, Kitchen, CoffeeBar, Lose) ───────────────────────── #}
 {% else %}
   <style>
@@ -313,7 +350,6 @@
       list-style:disc inside; margin:.5rem 0 0; padding:0;
       font-size:.9rem;
     }
-
     .nav-actions {
       margin-top:2rem;
       display:grid;
@@ -344,7 +380,6 @@
       <div class="cutscene"><p>{{ cutscene }}</p></div>
     {% endif %}
     <p>{{ room.get_description() }}</p>
-
     <div class="room-body">
       <div class="room-inventory">
         <h3>You see:</h3>
@@ -391,7 +426,6 @@
         {% endif %}
       </div>
     </div>
-
     <div class="nav-actions">
       {% for k,action in menu.actions.items() %}
         {% if action.get_id() != 'DropItem'
@@ -415,5 +449,6 @@
       {% endfor %}
     </div>
   </div>
+
 {% endif %}
 {% endblock %}

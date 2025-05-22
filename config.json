@@ -1,9 +1,9 @@
 {
-  "orders_to_win": 2,
+  "orders_to_win": 4,
   "order_size": {
-    "min": 1,
+    "min": 2,
     "max": 3
   },
-  "time_limit": 100,
+  "time_limit": 50,
   "player_name": "Shubham"
 }
