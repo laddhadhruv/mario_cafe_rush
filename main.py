@@ -28,7 +28,7 @@ app = Flask(__name__)
 app.secret_key = b'787c5ff49ec3c651ea1dee62118a35b37bb3ec843f2bfbac59fce44c10d85158'
 app.config['SESSION_TYPE'] = 'filesystem'
 
-# ─── Load JSON config into Flask’s config ────────────────────────────────────
+# ─── Load JSON config into Flask's config ────────────────────────────────────
 with open(CONFIG_PATH, 'r') as f:
     app.config.update(json.load(f))
 # ──────────────────────────────────────────────────────────────────────────────
@@ -70,6 +70,16 @@ def settings_post():
         json.dump(cfg, f, indent=2)
 
     app.config.update(cfg)
+
+    # Update player name in existing game session
+    from core.support import get_game
+    game = get_game()
+    if game:
+        player = game.get_player()
+        if player:
+            player.update_name()
+        game.update() # Persist game state changes
+
     return redirect('/frontofhouse')
 # ──────────────────────────────────────────────────────────────────────────────
 

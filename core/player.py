@@ -6,6 +6,8 @@ class Player:
         self.inventory = {} # Will store {unique_uuid_key: item_object}
         self.name = current_app.config.get('player_name', 'Guest')
 
+    def update_name(self):
+        self.name = current_app.config.get('player_name', 'Guest')
     
     # adds item to the inventory for this player
     def add_item(self,item):
