@@ -1,0 +1,302 @@
+<div class="game-container">
+  <div class="game-header">
+    <h1>Café Byte</h1>
+    <div class="game-stats">
+      <span class="timer">Time: <span id="time">60</span>s</span>
+      <span class="score">Score: <span id="score">0</span></span>
+      <span class="satisfaction">Customer Satisfaction: <span id="satisfaction">100</span>%</span>
+    </div>
+  </div>
+
+  <div class="game-rooms">
+    <div class="room" id="front-house">
+      <h2>Front of House</h2>
+      <div class="customer-area">
+        <div class="current-order">
+          <h3>Current Order:</h3>
+          <div id="order-display"></div>
+        </div>
+        <button id="new-order">New Customer</button>
+      </div>
+    </div>
+
+    <div class="room" id="bakery">
+      <h2>Bakery</h2>
+      <div class="items">
+        <div class="item" draggable="true" data-item="croissant">Croissant</div>
+        <div class="item" draggable="true" data-item="bread">Bread</div>
+      </div>
+      <div class="prep-station">
+        <h3>Prep Station</h3>
+        <div id="bakery-prep"></div>
+        <button class="clear-station" onclick="clearStation('bakery-prep')">Clear Station</button>
+      </div>
+    </div>
+
+    <div class="room" id="coffee-bar">
+      <h2>Coffee Bar</h2>
+      <div class="items">
+        <div class="item" draggable="true" data-item="coffee">Coffee</div>
+        <div class="item" draggable="true" data-item="milk">Milk</div>
+        <div class="item" draggable="true" data-item="sugar">Sugar</div>
+      </div>
+      <div class="drink-station">
+        <h3>Drink Station</h3>
+        <div id="drink-prep"></div>
+        <button class="clear-station" onclick="clearStation('drink-prep')">Clear Station</button>
+      </div>
+    </div>
+
+    <div class="room" id="kitchen">
+      <h2>Kitchen</h2>
+      <div class="items">
+        <div class="item" draggable="false" data-item="egg">
+          Egg
+          <div class="sub-options">
+            <div class="sub-item" draggable="true" data-item="scrambled-egg">Scrambled</div>
+            <div class="sub-item" draggable="true" data-item="boiled-egg">Boiled</div>
+            <div class="sub-item" draggable="true" data-item="omlette-egg">Omlette</div>
+          </div>
+        </div>
+        <div class="item" draggable="true" data-item="cheese">Cheese</div>
+        <div class="item" draggable="false" data-item="bacon">
+          Bacon
+          <div class="sub-options">
+            <div class="sub-item" draggable="true" data-item="soft-bacon">Soft</div>
+            <div class="sub-item" draggable="true" data-item="crispy-bacon">Crispy</div>
+            <div class="sub-item" draggable="true" data-item="fatfree-bacon">Fat-Free</div>
+          </div>
+        </div>
+      </div>
+      <div class="cooking-station">
+        <h3>Cooking Station</h3>
+        <div id="kitchen-prep"></div>
+        <button class="clear-station" onclick="clearStation('kitchen-prep')">Clear Station</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-tray">
+    <h3>Order Tray</h3>
+    <div id="tray-items"></div>
+    <button id="serve-order">Serve Order</button>
+    <button id="clear-tray">Clear Tray</button>
+  </div>
+</div>
+
+<style>
+.game-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+}
+
+.game-rooms {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.room {
+  border: 2px solid #6b4f2c;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.item {
+  padding: 10px;
+  background: #f0e6d2;
+  border: 1px solid #6b4f2c;
+  border-radius: 4px;
+  cursor: move;
+  position: relative;
+}
+
+.item:hover {
+  background: #e6d9c2;
+}
+
+.sub-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #6b4f2c;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.item:hover .sub-options {
+  display: block;
+}
+
+.sub-item {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.sub-item:hover {
+  background: #f0e6d2;
+}
+
+.prep-station, .drink-station, .cooking-station {
+  min-height: 100px;
+  border: 1px dashed #6b4f2c;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.order-tray {
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px solid #6b4f2c;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #6b4f2c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #8b6f4c;
+}
+
+.clear-station {
+  margin-top: 10px;
+  font-size: 0.9em;
+  padding: 5px 10px;
+}
+</style>
+
+<script>
+// Game state
+let currentOrder = null;
+let score = 0;
+let satisfaction = 100;
+let timeLeft = 60;
+
+// Initialize drag and drop
+document.querySelectorAll('.item, .sub-item').forEach(item => {
+  item.addEventListener('dragstart', handleDragStart);
+});
+
+document.querySelectorAll('.prep-station, .drink-station, .cooking-station').forEach(station => {
+  station.addEventListener('dragover', handleDragOver);
+  station.addEventListener('drop', handleDrop);
+});
+
+// Generate new order
+document.getElementById('new-order').addEventListener('click', generateNewOrder);
+
+// Serve order
+document.getElementById('serve-order').addEventListener('click', serveOrder);
+
+// Clear tray
+document.getElementById('clear-tray').addEventListener('click', clearTray);
+
+// Timer
+setInterval(updateTimer, 1000);
+
+function handleDragStart(e) {
+  e.dataTransfer.setData('text/plain', e.target.dataset.item);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const item = e.dataTransfer.getData('text/plain');
+  const station = e.target.closest('.prep-station, .drink-station, .cooking-station');
+  if (station) {
+    const itemElement = document.createElement('div');
+    itemElement.className = 'prepped-item';
+    itemElement.textContent = item;
+    station.appendChild(itemElement);
+  }
+}
+
+function clearStation() {
+  document.getElementById('tray-items').innerHTML = '';
+  document.querySelectorAll('.prep-station, .drink-station, .cooking-station').forEach(station => {
+    station.innerHTML = '';
+  });
+}
+
+function clearTray() {
+  document.getElementById('tray-items').innerHTML = '';
+  document.querySelectorAll('.prep-station, .drink-station, .cooking-station').forEach(station => {
+    station.innerHTML = '';
+  });
+}
+
+function generateNewOrder() {
+  const orders = [
+    'Croissant sandwich with scrambled egg and crispy bacon, plus a Latte with oat milk',
+    'Bread sandwich with cheese and soft bacon, plus a Coffee with sugar',
+    'Croissant with omlette egg, plus a Latte with regular milk',
+    'Bread sandwich with boiled egg and fat-free bacon, plus a Coffee with milk'
+  ];
+  currentOrder = orders[Math.floor(Math.random() * orders.length)];
+  document.getElementById('order-display').textContent = currentOrder;
+  timeLeft = 60;
+  updateTimer();
+}
+
+function serveOrder() {
+  // Check if order is correct
+  const trayItems = document.getElementById('tray-items').children;
+  let incorrectItems = 0;
+  for (let i = 0; i < trayItems.length; i++) {
+    const item = trayItems[i].textContent;
+    if (!currentOrder.includes(item)) {
+      incorrectItems++;
+    }
+  }
+  satisfaction = Math.max(0, satisfaction - (incorrectItems * 15));
+  score += 10;
+  updateStats();
+  clearTray();
+}
+
+function updateTimer() {
+  timeLeft--;
+  if (timeLeft <= 0) {
+    satisfaction = Math.max(0, satisfaction - 10);
+    updateStats();
+    clearTray();
+  }
+  document.getElementById('time').textContent = timeLeft;
+}
+
+function updateStats() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('satisfaction').textContent = satisfaction;
+}
+
+</script>
