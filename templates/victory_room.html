@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="room_image">
+    {% if room.get_image %}
+      <img src="/static/images/{{ room.get_image() }}"/>
+    {% endif %}
+  </div>
+
+  {% if cutscene %}
+    <div class="cutscene">
+      <p>{{ cutscene }}</p>
+    </div>
+  {% endif %}
+
+  <div class="room_description">
+    <p>{{ room.get_description() }}</p>
+  </div>
+
+  <div class="inventory_actions_container">
+    <!-- room_inventory and player_inventory cards here… -->
+
+    <div class="actions">
+      <p>Things you can do:</p>
+
+      <!-- Hall of Fame link -->
+      <div class="action_form">
+        <a href="{{ url_for('halloffame') }}" target="_blank">
+          <button type="button">🏆 View Hall of Fame</button>
+        </a>
+      </div>
+
+      <!-- Restart Game button -->
+      <div class="action_form">
+        <form action="/restart" method="get" onsubmit="localStorage.removeItem('gameStart')">
+          <button type="submit">Restart Game</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="player_name">
+    Player: {{ player.name }}
+  </div>
+{% endblock content %}

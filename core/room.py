@@ -12,6 +12,11 @@ class Room:
         self.inventory[item.get_id()] = item
         return
     
+    # retrieve item from inventory without removing it (if it is there)
+    # otherwise return None
+    def get_item(self, item_id):
+        return self.inventory.get(item_id, None)
+    
     # remove and return item from inventory (if it is there)
     # otherwise return empty string
     def pop_item(self,item_id):

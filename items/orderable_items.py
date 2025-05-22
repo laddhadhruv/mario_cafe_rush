@@ -2,46 +2,70 @@ from core.item import Item
 
 class Croissant(Item):
     def __init__(self, filled=False):
-        super().__init__(f"{'filled' if filled else 'plain'}_croissant") # Unique ID
-        self.filled = filled
-        self.description = f"{'filled' if filled else 'plain'} croissant"
+        super().__init__(f"{'filled' if filled else 'plain'}_croissant")
+        self.filled     = filled
+        self.description= f"{'filled' if filled else 'plain'} croissant"
+        self.section    = "bakery"      # ← allow dropping only in bakery
+        self.set_is_generator(True)
 
     def get_description(self):
         return self.description
+
+    def reset_to_default_state(self):
+        self.set_is_generator(False)
+
 
 class Bread(Item):
     def __init__(self, toasted=False):
-        super().__init__(f"{'toasted' if toasted else 'untoasted'}_bread") # Unique ID
-        self.toasted = toasted
-        self.description = f"{'toasted' if toasted else 'untoasted'} bread"
+        super().__init__(f"{'toasted' if toasted else 'untoasted'}_bread")
+        self.toasted    = toasted
+        self.description= f"{'toasted' if toasted else 'untoasted'} bread"
+        self.section    = "bakery"
+        self.set_is_generator(True)
 
     def get_description(self):
         return self.description
+
+    def reset_to_default_state(self):
+        self.set_is_generator(False)
+
 
 class Egg(Item):
     def __init__(self, style="scrambled"):
-        super().__init__(f"{style}_egg") # Unique ID
-        self.style = style # scrambled, boiled, omelette
-        self.description = f"{style} egg"
+        super().__init__(f"{style}_egg")
+        self.style      = style
+        self.description= f"{style} egg"
+        self.section    = "kitchen"     # ← allow dropping only in kitchen
+        self.set_is_generator(True)
 
     def get_description(self):
         return self.description
+
+    def reset_to_default_state(self):
+        self.set_is_generator(False)
+
 
 class Bacon(Item):
     def __init__(self, cooking_style="soft"):
-        super().__init__(f"{cooking_style}_bacon") # Unique ID
-        self.cooking_style = cooking_style # soft, crispy
-        self.description = f"{cooking_style} bacon"
+        super().__init__(f"{cooking_style}_bacon")
+        self.cooking_style = cooking_style
+        self.description   = f"{cooking_style} bacon"
+        self.section       = "kitchen"
+        self.set_is_generator(True)
 
     def get_description(self):
         return self.description
 
+    def reset_to_default_state(self):
+        self.set_is_generator(False)
+
+
 class Coffee(Item):
     def __init__(self, coffee_type="espresso"):
-        # Ensure coffee_type is part of the ID for uniqueness if multiple Coffee items are instantiated
-        super().__init__(f"{coffee_type}_drink") # Potentially conflicting with Espresso item ID 'espresso'
-        self.coffee_type = coffee_type # espresso, americano, cortado, cappuccino, latte
+        super().__init__(f"{coffee_type}_drink")
+        self.coffee_type = coffee_type
         self.description = coffee_type
+        self.section     = "coffeebar"  # ← allow dropping only in coffee bar
 
     def get_description(self):
-        return self.description 
+        return self.description

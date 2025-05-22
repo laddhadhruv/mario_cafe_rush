@@ -3,11 +3,16 @@ from core.room import Room
 from core.action import Action
 # from items.treasure import Treasure # No longer used
 from items.orderable_items import Egg, Bacon # Import new items
+from core.action import DropItem
+
+# inside Kitchen.__init__:
+   
+
 
 class Kitchen(Room):
     def __init__(self, room_id):
         Room.__init__(self, room_id)    # do basic initialization for every room
-        
+        self.add_action(DropItem)
         # Add items available in the kitchen
         self.add_item(Egg(style="scrambled")) # scrambled_egg
         self.add_item(Egg(style="boiled"))    # boiled_egg

@@ -1,23 +1,152 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-		<title>{% block title %}The MS-MBA Adventure!{% endblock %}</title>
-		<link href="/static/stylesheets/main.css" rel="stylesheet" type="text/css" />
-		 <style>
-			img {
-			width: 500px;
-			height: auto;
-			}
-  		</style>
-	</head>
-	<body>
-		<div class="content">
-		{% block content %}{% endblock %}
-		</div>
-		
-		<div class="footer">
-		<a href="/restart">Restart Game</a>
-		</div>
-	</body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Brew &amp; Queue</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="{{ url_for('static', filename='stylesheets/main.css') }}"
+    rel="stylesheet"
+  />
+  <style>
+    /* GLOBAL TIMER */
+    #global-timer {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0,0,0,0.7);
+      color: #0f0;
+      padding: 0.5rem 1rem;
+      font-family: monospace;
+      border-radius: 4px;
+      z-index: 1000;
+      display: none;
+    }
+    body { margin:0; background:#f3e9dc; }
+    .content { max-width:800px; margin:0 auto; padding:1rem; }
+    .footer { text-align:center; padding:1rem; font-family:'Press Start 2P',cursive; }
+    .footer a { color:#6f4e37; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+  <!-- Timer container -->
+  {% if room is defined and room.id not in ['startingpoint','settings','victory_room','lose'] %}
+    <div id="global-timer">
+      Time left: <span id="global-timer-seconds">–</span> s
+    </div>
+  {% endif %}
+
+  <!-- Seed gameStart on first FOH load -->
+  {% if room is defined and room.id=='frontofhouse' %}
+  <script>
+    if (!localStorage.getItem('gameStart')) {
+      localStorage.setItem('gameStart', Date.now());
+      localStorage.setItem('timerInitialized','true');
+      localStorage.setItem('audioTrack','normal');
+      localStorage.setItem('audioTime','0');
+    }
+  </script>
+  {% endif %}
+
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div class="footer">
+    <a href="{{ url_for('restart') }}">Restart Game</a>
+  </div>
+
+  {% if room is defined %}
+    {# Background music element #}
+    <audio id="bg-audio" preload="metadata"></audio>
+
+    {% if room.id not in ['startingpoint','settings','victory_room','lose'] %}
+      <!-- Countdown + Persistent Music Logic -->
+      <script>
+      (function(){
+        const startRaw = localStorage.getItem('gameStart');
+        const inited   = localStorage.getItem('timerInitialized');
+        if (!startRaw||!inited) return;
+
+        const startMs       = parseInt(startRaw,10);
+        const limitMs       = {{config.time_limit}}*1000;
+        const switchAfterMs = 20*1000;
+        const box           = document.getElementById('global-timer');
+        const secsEl        = document.getElementById('global-timer-seconds');
+        const audio         = document.getElementById('bg-audio');
+        const normalSrc     = "{{url_for('static',filename='audio/bg_normal.mp3')}}";
+        const lastSrc       = "{{url_for('static',filename='audio/last_time.mp3')}}";
+
+        let usingLast = localStorage.getItem('audioTrack')==='last';
+        let timePos   = parseFloat(localStorage.getItem('audioTime'))||0;
+
+        audio.loop=true;
+        audio.src=usingLast?lastSrc:normalSrc;
+        audio.currentTime=timePos;
+        audio.volume=0.5;
+        audio.play().catch(()=>{});
+
+        function pickTrack(rem) {
+          const wantLast = rem<=switchAfterMs;
+          if(wantLast!==usingLast){
+            usingLast=wantLast;
+            localStorage.setItem('audioTrack',wantLast?'last':'normal');
+            localStorage.setItem('audioTime','0');
+            audio.src=wantLast?lastSrc:normalSrc;
+            audio.currentTime=0;
+            audio.play().catch(()=>{});
+          }
+        }
+
+        function tick(){
+          const now=Date.now();
+          const elapsed=now-startMs;
+          const rem=limitMs-elapsed;
+          const secs=Math.ceil(rem/1000);
+          if(rem<=0){
+            localStorage.removeItem('gameStart');
+            localStorage.removeItem('timerInitialized');
+            window.location.href='/lose';
+            return;
+          }
+          box.style.display='block';
+          secsEl.textContent=secs;
+          const f=document.getElementById('foh-timer');
+          if(f)f.textContent=secs;
+          pickTrack(rem);
+          localStorage.setItem('audioTime',audio.currentTime.toString());
+        }
+
+        tick();
+        setInterval(tick,500);
+      })();
+      </script>
+
+    {% elif room.id=='victory_room' %}
+      <!-- Stop background, play victory music -->
+      <script>
+        const bg=document.getElementById('bg-audio');
+        bg.pause(); bg.currentTime=0;
+        bg.src="{{url_for('static',filename='audio/victory.mp3')}}";
+        bg.loop=false;
+        bg.play().catch(()=>{});
+      </script>
+
+    {% elif room.id=='lose' %}
+      <!-- Stop background, play lose music -->
+      <script>
+        const bg=document.getElementById('bg-audio');
+        bg.pause(); bg.currentTime=0;
+        bg.src="{{url_for('static',filename='audio/lose.mp3')}}";
+        bg.loop=false;
+        bg.play().catch(()=>{});
+      </script>
+    {% endif %}
+  {% endif %}
+
+</body>
 </html>

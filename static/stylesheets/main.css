@@ -8,24 +8,50 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   color: #4b2e2e;
-  background: #f5f1f0;            /* soft cream */
+  background: #f0eadd; /* Slightly warmer cream for a cozier feel */
+  line-height: 1.6; /* Improved default line height for readability */
+}
+
+/* Main content container for better centering and max-width */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
 /* ───────────────────────────────── Room Description ───────────────────────── */
 .room_description {
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
+  font-size: 1.6rem; /* Slightly increased for emphasis */
   color: #5a3e36;
   border-bottom: 2px solid #d8c4b6;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  background: #ffffffcc;           /* slight translucency */
+  padding: 1.5rem; /* Increased padding */
+  margin-bottom: 2rem; /* Increased margin */
+  background: #ffffff; /* Solid white for a cleaner look */
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Softer, more modern shadow */
 }
 
 /* ───────────────────────────────── Room Image ─────────────────────────────── */
+.room_image {
+  text-align: center; /* Center the image */
+  margin-bottom: 2rem;
+}
 
+.room_image img {
+  max-width: 100%; /* Ensure image is responsive */
+  height: auto;
+  border-radius: 8px; /* Optional: rounded corners for the image */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+/* Flex container for inventory and actions sections */
+.inventory_actions_container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 1.5rem; /* Space between flex items */
+  margin-bottom: 2rem;
+}
 
 /* ─────────────────────────── Inventories & Actions ───────────────────────── */
 .room_inventory,
@@ -34,77 +60,104 @@ body {
   background: #ffffff;
   border: none;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 1rem;
-  margin: 0 1% 1.5rem 0;
-  width: 30%;
-  float: left;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Softer shadow */
+  padding: 1.5rem; /* Increased padding */
+  /* margin: 0 1% 1.5rem 0; */ /* Replaced by flex gap */
+  /* width: 30%; */ /* Replaced by flex basis */
+  /* float: left; */ /* Replaced by flex */
+  flex: 1 1 300px; /* Flex properties: grow, shrink, basis (minimum width before wrapping) */
+  display: flex; /* Enable flexbox for inner content alignment */
+  flex-direction: column; /* Stack content vertically */
 }
 
-.room_inventory h2,
-.player_inventory h2,
-.actions h2 {
+.room_inventory p:first-child,
+.player_inventory p:first-child,
+.actions p:first-child {
   font-family: 'Playfair Display', serif;
   margin-top: 0;
-  font-size: 1.25rem;
+  font-size: 1.35rem; /* Consistent heading size */
   color: #6f4e37;
+  margin-bottom: 1rem; /* Space below the title */
 }
 
-/* ────────────────────────────────── Forms ─────────────────────────────────── */
-.action_form {
-  clear: both;
-  margin: 1rem 0;
+/* Styling for the forms within these sections */
+.room_inventory form,
+.player_inventory form,
+.actions .action_form form {
+  display: flex;
+  flex-direction: column; /* Stack form elements */
+  gap: 0.75rem; /* Space between form elements */
+  flex-grow: 1; /* Allow form to take available space if content is short */
 }
 
-.actions ul,
-.room_inventory ul,
-.player_inventory ul {
-  list-style: none;
-  padding-left: 0;
+.room_inventory form div,
+.player_inventory form div {
+  display: flex;
+  align-items: center; /* Align checkbox with text */
+  gap: 0.5rem; /* Space between checkbox and label */
 }
 
-.actions li,
-.room_inventory li,
-.player_inventory li {
-  margin-bottom: 0.75rem;
+.room_inventory form div input[type="checkbox"],
+.player_inventory form div input[type="checkbox"] {
+  margin-right: 0.5rem; /* Space next to checkbox */
 }
 
 /* Buttons */
 button,
 input[type="submit"],
 a.button {
-  background: #8c5e46;
+  background: #7a5c58; /* A slightly more muted, sophisticated brown */
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
+  padding: 0.75rem 1.25rem; /* Slightly larger padding */
+  font-size: 1rem; /* Slightly larger font size */
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease; /* Added transform transition */
+  text-decoration: none; /* Ensure links styled as buttons don't have underlines */
+  display: inline-block; /* Ensure proper padding and margin for <a> tags */
+  text-align: center;
+  font-family: 'Roboto', sans-serif; /* Ensure consistent font */
+  font-weight: 500; /* Medium weight for button text */
 }
 
 button:hover,
 input[type="submit"]:hover,
 a.button:hover {
-  background: #a1775b;
+  background: #634842; /* Darker shade on hover */
+  transform: translateY(-1px); /* Slight lift on hover */
 }
 
-/* Forms inside inventory/actions */
+/* Ensure "Take item(s)" and "Drop item(s)" buttons are at the bottom */
+.room_inventory form input[type="submit"],
+.player_inventory form input[type="submit"] {
+  margin-top: auto; /* Pushes button to the bottom of the flex container */
+}
+
+/* Forms inside inventory/actions - this specific rule might be redundant with the new flex setup */
+/*
 .room_inventory form,
 .actions form {
   display: inline-block;
   margin: 0;
 }
+*/
 
 /* ───────────────────────────────── Cutscene ───────────────────────────────── */
 .cutscene {
-  color: #c34a36;
-  font-style: italic;
-  background: #fff2f0;
-  padding: 0.5rem 1rem;
-  border-left: 4px solid #c34a36;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  color: #ab3E2F; /* Slightly desaturated red for a more modern feel */
+  font-style: normal; /* Removing italic for cleaner look */
+  font-weight: 500; /* Medium weight for emphasis */
+  background: #fdeceB; /* Lighter, less saturated background */
+  padding: 1rem 1.5rem; /* Increased padding */
+  border-left: 5px solid #ab3E2F; /* Slightly thicker border */
+  border-radius: 6px; /* Softer radius */
+  margin-bottom: 2rem; /* Increased margin */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* Subtle shadow */
+}
+
+.cutscene p {
+  margin: 0; /* Remove default paragraph margin */
 }
 
 /* ───────────────────────────────── Footer ─────────────────────────────────── */
@@ -116,12 +169,51 @@ a.button:hover {
   font-size: 0.85rem;
 }
 
+.footer a { /* Style links in footer like buttons for consistency if desired, or keep as simple text */
+  color: #7a5c58;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.footer a:hover {
+  background: #f0eadd; /* Light background on hover */
+  color: #634842;
+}
+
 /* ───────────────────────────────── Responsive ──────────────────────────────── */
-@media (max-width: 900px) {
+/* The flexbox setup for .inventory_actions_container should handle responsiveness naturally.
+   We can add specific breakpoints if needed for further adjustments. */
+
+@media (max-width: 768px) { /* Adjusted breakpoint for tablets/smaller screens */
+  .inventory_actions_container {
+    flex-direction: column; /* Stack inventory/actions sections vertically */
+  }
+
   .room_inventory,
   .player_inventory,
   .actions {
-    width: 30%;
-    margin-right: 0;
+    width: 100%; /* Full width when stacked */
+    margin-right: 0; /* Remove right margin */
+    flex-basis: auto; /* Reset flex-basis */
   }
+
+  .room_description {
+    font-size: 1.4rem;
+  }
+
+  button,
+  input[type="submit"],
+  a.button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Clearfix for any remaining floats (though we're moving away from them) */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
 }

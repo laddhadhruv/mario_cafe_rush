@@ -4,6 +4,8 @@ class Item:
     def __init__(self, item_id):
         self.id = item_id
         self.actions = {}
+        self.description = "A plain vanilla item"
+        self.is_generator = False
     
     def get_id(self):
         return self.id
@@ -11,7 +13,13 @@ class Item:
     # display description of item.
     # should be overridden in subclass.
     def get_description(self):
-        return "an object (not sure what it is)"
+        return self.description
+    
+    def set_description(self, description):
+        self.description = description
+    
+    def set_is_generator(self, is_generator: bool):
+        self.is_generator = is_generator
     
     # adds action to the actions list for this item
     def add_action(self,action_class):

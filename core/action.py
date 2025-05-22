@@ -37,3 +37,55 @@ class Action:
             return "get"
         else:
             return "post"
+        
+
+# core/action.py
+from core.support import set_cutscene
+
+
+class DropItem(Action):
+    def __init__(self):
+        super().__init__("DropItem")
+
+    def get_description(self):
+        return "Drop Item"
+
+    def get_method(self):
+        return "post"
+
+    def is_nav_action(self):
+        # hide from the nav list — it’s triggered only via the inventory form
+        return False
+
+    def do_action(self, game, room, request):
+        raw = request.form.get("drop_id")
+        # convert to int if your keys are ints; otherwise leave as string
+        try:
+            drop_key = int(raw)
+        except (TypeError, ValueError):
+            drop_key = raw
+
+        player = game.get_player()
+
+        # 1) Does the player actually have this key?
+        if drop_key not in player.inventory:
+            set_cutscene("You don’t have that item.")
+            return game, room.id
+
+        item = player.inventory[drop_key]
+
+        # 2) Enforce room‐specific drop
+        section = getattr(item, "section", None)
+        if section is None:
+            set_cutscene("This item cannot be dropped.")
+            return game, room.id
+
+        if section != room.id:
+            set_cutscene(f"You can only drop {item.get_description()} in the {section}.")
+            return game, room.id
+
+        # 3) All good — drop it
+        player.inventory.pop(drop_key)
+        set_cutscene(f"Dropped {item.get_description()}.")
+        game.update()
+        return game, room.id

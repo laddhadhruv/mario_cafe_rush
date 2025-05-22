@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <script>
+    // Clear any old timer on settings page
+    try { localStorage.removeItem('gameStart'); } catch(e){}
+  </script>
+
+  <style>
+    /* Card container */
+    .settings-card {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-family: 'Press Start 2P', cursive;
+    }
+    .settings-card h2 {
+      margin-top: 0;
+      color: #6f4e37;
+      text-shadow: 1px 1px #fff;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    .settings-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem 2rem;
+      margin-top: 2rem;
+    }
+    .settings-form label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+      color: #503f32;
+    }
+    .settings-form input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .confirm-btn {
+      grid-column: 1 / -1;
+      justify-self: center;
+      background: #6f4e37;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .confirm-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* Gear animation */
+    #gear {
+      display: none;
+      width: 80px;
+      margin: 2rem auto;
+      animation: spin 3s linear forwards;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+  </style>
+
+  <div class="settings-card">
+    <h2>Configure Your Game</h2>
+    <p style="text-align:center; color:#503f32; font-size:0.9rem;">
+      Leave blank to keep the current value.
+    </p>
+
+    <!-- Audio for gear rotation -->
+    <audio id="gear-sound" src="{{ url_for('static', filename='audio/gear-rotator.mp3') }}"></audio>
+
+    <form id="settings-form" class="settings-form" method="post">
+      <div>
+        <label for="orders_to_win">Orders To Win</label>
+        <input type="text" id="orders_to_win" name="orders_to_win"
+               placeholder="{{ config.orders_to_win }}">
+      </div>
+      <div>
+        <label for="order_size_min">Order Size Min</label>
+        <input type="text" id="order_size_min" name="order_size_min"
+               placeholder="{{ config.order_size.min }}">
+      </div>
+      <div>
+        <label for="order_size_max">Order Size Max</label>
+        <input type="text" id="order_size_max" name="order_size_max"
+               placeholder="{{ config.order_size.max }}">
+      </div>
+      <div>
+        <label for="time_limit">Time Limit (s)</label>
+        <input type="text" id="time_limit" name="time_limit"
+               placeholder="{{ config.time_limit }}">
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label for="player_name">Player Name</label>
+        <input type="text" id="player_name" name="player_name"
+               placeholder="{{ config.player_name }}">
+      </div>
+
+      <button type="submit" class="confirm-btn">Confirm Configuration</button>
+    </form>
+
+    <img id="gear" src="{{ url_for('static', filename='images/gear1.png') }}" alt="Loading...">
+  </div>
+
+  <script>
+    document.getElementById('settings-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // fetch & trim values
+      const otw = document.getElementById('orders_to_win').value.trim();
+      const min = document.getElementById('order_size_min').value.trim();
+      const max = document.getElementById('order_size_max').value.trim();
+      const tl  = document.getElementById('time_limit').value.trim();
+
+      // helper to test positive integer
+      const isPosInt = v => /^[1-9]\d*$/.test(v);
+
+      // validations
+      if (otw && !isPosInt(otw)) {
+        return alert('Orders To Win must be a positive integer.');
+      }
+      if (min) {
+        if (!isPosInt(min) || +min < 1 || +min > 10) {
+          return alert('Order Size Min must be an integer between 1 and 10.');
+        }
+      }
+      if (max) {
+        if (!isPosInt(max) || +max < 1 || +max > 10) {
+          return alert('Order Size Max must be an integer between 1 and 10.');
+        }
+      }
+      if (min && max && +max <= +min) {
+        return alert('Order Size Max must be greater than Order Size Min.');
+      }
+      if (tl && !isPosInt(tl)) {
+        return alert('Time Limit must be a positive integer.');
+      }
+
+      // all good → play gear animation & then submit
+      const gearSfx = document.getElementById('gear-sound');
+      gearSfx.currentTime = 0;
+      gearSfx.play().catch(()=>{});
+      this.style.display = 'none';
+      document.getElementById('gear').style.display = 'block';
+      setTimeout(() => this.submit(), 3000);
+    });
+  </script>
+{% endblock %}

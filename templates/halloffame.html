@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+
+  <style>
+    .room-banner {
+      width:100%; height:180px; object-fit:cover;
+      border-bottom:6px solid #6f4e37;
+      box-shadow:0 6px 16px rgba(0,0,0,0.2);
+      margin-bottom:1.5rem;
+    }
+    .room-card {
+      background:#fff; border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.1);
+      padding:2rem; font-family:'Press Start 2P',cursive;
+      color:#4b2e2e; max-width:900px; margin:0 auto 2rem;
+    }
+    .room-card h2 {
+      margin:0 0 1rem; font-size:1.6rem;
+      text-align:center; color:#6f4e37;
+      text-shadow:1px 1px #fff;
+    }
+    table.hof {
+      width:100%; border-collapse: collapse;
+      font-size:0.85rem;
+    }
+    table.hof th, table.hof td {
+      padding:0.75rem 1rem;
+      border:2px solid #ddd;
+      text-align:left;
+    }
+    table.hof th {
+      background:#fdebd3;
+      color:#4b2e2e;
+      cursor:pointer;
+      user-select:none;
+      position: relative;
+    }
+    table.hof th:hover {
+      background:#f8dcc1;
+    }
+    table.hof th::after {
+      content: '↕';
+      position:absolute; right:0.5rem; font-size:0.8rem;
+      color:#aaa;
+    }
+    table.hof tr:nth-child(even) td {
+      background:#f9f9f9;
+    }
+    .no-entries {
+      text-align:center; padding:2rem;
+      color:#503f32; font-style:italic;
+    }
+  </style>
+
+  {# Banner for Hall of Fame #}
+  <img
+    class="room-banner"
+    src="{{ url_for('static', filename='images/halloffame_bg.png') }}"
+    alt="Hall of Fame Banner"
+  />
+
+  <div class="room-card">
+    <h2>Hall of Fame</h2>
+
+    {% if entries %}
+      <table class="hof" id="hof-table">
+        <thead>
+          <tr>
+            <th data-key="player_name">Player</th>
+            <th data-key="timestamp">Date</th>
+            <th data-key="total_time">Total Time (s)</th>
+            <th data-key="item_count">Items</th>
+            <th data-key="avg_time">Avg Time/item (s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+          {% set items = e.order_durations.split('|') %}
+          {% set count = items|length %}
+          {% set total = e.total_time|float %}
+          {% set avg = (total / count)|round(2) if count > 0 else 0 %}
+          <tr>
+            <td>{{ e.player_name }}</td>
+            <td>{{ e.timestamp.split('T')[0] }}</td>
+            <td>{{ total|round(2) }}</td>
+            <td>{{ count }}</td>
+            <td>{{ avg }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="no-entries">No entries yet. Be the first to make it into the Hall of Fame!</div>
+    {% endif %}
+
+  </div>
+
+  <script>
+    // Simple table sort
+    document.querySelectorAll('#hof-table th').forEach(function(th){
+      th.addEventListener('click', function(){
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        const key   = th.getAttribute('data-key');
+        const rows  = Array.from(tbody.querySelectorAll('tr'));
+        const idx   = Array.from(th.parentNode.children).indexOf(th);
+        const isNum = ['total_time','item_count','avg_time'].includes(key);
+        // toggle sort direction
+        const asc = !th.classList.contains('asc');
+        table.querySelectorAll('th').forEach(h=>h.classList.remove('asc','desc'));
+        th.classList.add(asc?'asc':'desc');
+        rows.sort((a,b)=>{
+          let va = a.children[idx].textContent.trim();
+          let vb = b.children[idx].textContent.trim();
+          if (isNum) {
+            va = parseFloat(va) || 0;
+            vb = parseFloat(vb) || 0;
+          }
+          else {
+            va = va.toLowerCase();
+            vb = vb.toLowerCase();
+          }
+          return (va>vb?1:-1)*(asc?1:-1);
+        });
+        rows.forEach(r=>tbody.appendChild(r));
+      });
+    });
+  </script>
+
+{% endblock %}

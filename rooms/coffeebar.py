@@ -3,10 +3,15 @@ from core.room import Room
 # from items.coffee import Coffee # No longer used
 from items.espresso import Espresso
 from core.action import Action
+from core.action import DropItem
+
+# inside CoffeeBar.__init__:
+    
 
 class CoffeeBar(Room):
     def __init__(self, room_id):
         super().__init__(room_id)
+        self.add_action(DropItem)
         # add inventory items
         # self.add_item(Coffee()) # No longer used
         self.add_item(Espresso())    

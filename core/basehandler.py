@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect
 import core.support
 from core.menu import Menu
 from core.item import Item
+import copy # Import the copy module
 
 class BaseHandler():
     
@@ -83,11 +84,26 @@ class BaseHandler():
         # if user picked something up, then update player and room inventory
         if add_stuff:
             for item_name in add_stuff:
-                item = room.pop_item(item_name)
-                if isinstance(item, Item):
-                    item.do_item_added(self.game,room,request)
-                    player.add_item(item)
-                # else: item was not found, or pop_item returned default string - do nothing or log error
+                # First, get a reference to the item in the room
+                original_item_in_room = room.get_item(item_name) 
+                
+                if isinstance(original_item_in_room, Item):
+                    item_to_add_to_player = None
+                    if original_item_in_room.is_generator:
+                        # If it's a generator, copy it
+                        item_to_add_to_player = copy.deepcopy(original_item_in_room)
+                        # Reset any state on the copy if necessary, e.g., if it's a coffee machine that produces a fresh espresso
+                        # This might require a specific reset method on the Item or its subclasses
+                        if hasattr(item_to_add_to_player, 'reset_to_default_state'): # Example method
+                            item_to_add_to_player.reset_to_default_state()
+                    else:
+                        # If not a generator, pop it from the room
+                        item_to_add_to_player = room.pop_item(item_name)
+                    
+                    if isinstance(item_to_add_to_player, Item):
+                        item_to_add_to_player.do_item_added(self.game,room,request) # Call on the item being added
+                        player.add_item(item_to_add_to_player)
+                # else: original_item_in_room was not found or not an Item instance - do nothing or log error
             self.game.update()
         
         # if user dropped something, then update player and room inventory
